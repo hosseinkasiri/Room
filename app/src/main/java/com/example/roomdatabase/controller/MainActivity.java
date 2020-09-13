@@ -51,7 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private void updateUi() {
         mUsers = AppDatabase.getInstance(this).mUserDao().getAll();
         if (mUserAdapter == null) {
-            mUserAdapter = new UserAdapter(this, mUsers);
+            mUserAdapter = new UserAdapter(this, mUsers, new UserAdapter.OnDeleteUser() {
+                @Override
+                public void onDeleteUser(User user, int position) {
+                    AppDatabase.getInstance(MainActivity.this).mUserDao().delete(user);
+                    mUserAdapter.notifyItemRemoved(position);
+                }
+            });
             mRecyclerView.setAdapter(mUserAdapter);
         }else {
             mUserAdapter.setUsers(mUsers);
